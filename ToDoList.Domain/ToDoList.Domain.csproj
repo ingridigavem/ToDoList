@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Account\ValueObjects\" />
+    <Folder Include="Account\UseCases\" />
+    <Folder Include="Shared\UseCases\" />
+    <Folder Include="ToDoList\UseCases\" />
+    <Folder Include="ToDoList\ValueObjects\" />
+  </ItemGroup>
+
 </Project>
