@@ -1,0 +1,46 @@
+﻿using FluentValidation.Results;
+using Microsoft.Extensions.Caching.Memory;
+using ToDoList.Domain.Shared.DTOs;
+using ToDoList.Domain.ToDoList.Entities;
+using ToDoList.Domain.ToDoList.UseCases.CreateToDo.Contracts;
+
+namespace ToDoList.Domain.ToDoList.UseCases.CreateToDo;
+public class CreateToDoHandler {
+    private readonly ICreateToDoRepository _repository;
+    private readonly IMemoryCache _cache;
+
+    public CreateToDoHandler(ICreateToDoRepository repository, IMemoryCache cache) {
+        _repository = repository;
+        _cache = cache;
+    }
+
+    public async Task<Result<CreateToDoResponse>> Handle(CreateToDoRequest request) {
+
+        #region Validate Request    
+        CreateToDoValidation validator = new CreateToDoValidation();
+
+        ValidationResult validations = validator.Validate(request);
+
+        if (!validations.IsValid) {
+            var errorsList = new List<string>();
+            validations.Errors.ForEach(error => errorsList.Add(error.ErrorMessage));
+            return new Result<CreateToDoResponse>(errors: errorsList);
+        }
+        #endregion
+
+        #region Generate ToDo
+        var toDo = new ToDo { Description = request.Description };
+        #endregion
+
+        #region Save Data and Reset Cache
+        try {
+            await _repository.SaveToDo(toDo);
+            _cache.Remove(key: "ToDoList");
+        } catch (Exception ex) {
+            return new Result<CreateToDoResponse>(error: "Failed to persist new To-Do", exceptionMessage: ex.Message);
+        }
+        #endregion
+
+        return new Result<CreateToDoResponse>(data: new CreateToDoResponse { Id = toDo.Id });
+    }
+}
