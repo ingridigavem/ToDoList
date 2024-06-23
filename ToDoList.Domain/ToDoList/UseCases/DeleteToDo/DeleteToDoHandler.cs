@@ -6,9 +6,9 @@ using ToDoList.Domain.ToDoList.UseCases.Contracts;
 namespace ToDoList.Domain.ToDoList.UseCases.DeleteToDo;
 public class DeleteToDoHandler {
     private readonly IToDoRepository _repository;
-    private readonly IMemoryCache _cache;
+    private readonly MemoryCache _cache;
 
-    public DeleteToDoHandler(IToDoRepository repository, IMemoryCache cache) {
+    public DeleteToDoHandler(IToDoRepository repository, MemoryCache cache) {
         _repository = repository;
         _cache = cache;
     }
@@ -31,13 +31,13 @@ public class DeleteToDoHandler {
         #region Delete ToDo and Reset Cache
         try {
             await _repository.DeleteToDo(request.Id);
-            _cache.Remove(key: "ToDoList");
+            _cache.Clear();
         } catch (Exception ex) {
 
             return new Result<DeleteToDoResponse>(error: "Failed to delete To-Do", exceptionMessage: ex.Message, status: HttpStatusCode.InternalServerError);
         }
         #endregion
 
-        return new Result<DeleteToDoResponse>(data: new DeleteToDoResponse(true), status: HttpStatusCode.OK);
+        return new Result<DeleteToDoResponse>(data: new DeleteToDoResponse(true), status: HttpStatusCode.NoContent);
     }
 }
