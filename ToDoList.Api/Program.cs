@@ -1,9 +1,9 @@
-using ToDoList.Domain.ToDoList.UseCases.CreateToDo.Contracts;
+using ToDoList.Domain.ToDoList.UseCases.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMemoryCache();
-builder.Services.AddTransient<ICreateToDoRepository>();
+builder.Services.AddTransient<IToDoRepository>();
 
 var app = builder.Build();
 
