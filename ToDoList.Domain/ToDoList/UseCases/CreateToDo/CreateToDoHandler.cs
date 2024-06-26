@@ -5,15 +5,7 @@ using ToDoList.Domain.ToDoList.Entities;
 using ToDoList.Domain.ToDoList.UseCases.Contracts;
 
 namespace ToDoList.Domain.ToDoList.UseCases.CreateToDo;
-public class CreateToDoHandler {
-    private readonly IToDoRepository _repository;
-    private readonly MemoryCache _cache;
-
-    public CreateToDoHandler(IToDoRepository repository, MemoryCache cache) {
-        _repository = repository;
-        _cache = cache;
-    }
-
+public class CreateToDoHandler(IToDoRepository repository, MemoryCache cache) {
     public async Task<Result<CreateToDoResponse>> Handle(CreateToDoRequest request) {
 
         #region Validate Request    
@@ -36,8 +28,8 @@ public class CreateToDoHandler {
 
         #region Save Data and Reset Cache
         try {
-            await _repository.SaveToDo(toDo);
-            _cache.Clear();
+            await repository.SaveToDoAsync(toDo);
+            cache.Clear();
 
         } catch (Exception ex) {
             return new Result<CreateToDoResponse>(error: "Failed to persist new To-Do", exceptionMessage: ex.Message, status: HttpStatusCode.InternalServerError);
