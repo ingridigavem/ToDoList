@@ -4,7 +4,7 @@ namespace ToDoList.Domain.Shared.DTOs;
 public class Result<T> {
     public T? Data { get; private set; }
     public HttpStatusCode Status { get; private set; }
-    public List<string> Errors { get; private set; } = new List<string>();
+    public List<string> Errors { get; private set; } = [];
     public string? ExceptionMessage { get; private set; }
 
     public Result(T data, List<string> errors, HttpStatusCode status) {
