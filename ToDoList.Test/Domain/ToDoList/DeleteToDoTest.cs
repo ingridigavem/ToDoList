@@ -3,17 +3,17 @@ using Moq;
 using System.Net;
 using ToDoList.Domain.ToDoList.UseCases.Contracts;
 using ToDoList.Domain.ToDoList.UseCases.DeleteToDo;
+using ToDoList.Test.Shared;
 
 namespace ToDoList.Test.Domain.ToDoList;
 public class DeleteToDoTest {
     private readonly Mock<IToDoRepository> repository = new();
     private readonly MemoryCache cache = new(new MemoryCacheOptions());
-    private const string CACHE_KEY = "ToDoList";
 
     [Fact]
     public async Task ShouldDeleteToDo() {
         repository.Setup(x => x.DeleteToDoAsync(It.IsAny<Guid>()));
-        cache.Set(CACHE_KEY, "test value");
+        cache.Set(Consts.CACHE_KEY, "test value");
 
         var handler = new DeleteToDoHandler(repository.Object, cache);
 
