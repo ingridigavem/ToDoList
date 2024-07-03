@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using ToDoList.Domain.Shared.DTOs;
 using ToDoList.Domain.ToDoList.UseCases.Contracts;
 
 namespace ToDoList.Domain.ToDoList.UseCases.DeleteToDo;
-public class DeleteToDoHandler(IToDoRepository repository, MemoryCache cache) {
-    public async Task<Result<DeleteToDoResponse>> Handle(DeleteToDoRequest request) {
+public class DeleteToDoHandler(IToDoRepository repository, MemoryCache cache) : IRequestHandler<DeleteToDoRequest, Result<DeleteToDoResponse>> {
+    public async Task<Result<DeleteToDoResponse>> Handle(DeleteToDoRequest request, CancellationToken cancellationToken) {
         #region Validate Request
         var validator = new DeleteToDoValidation();
 
