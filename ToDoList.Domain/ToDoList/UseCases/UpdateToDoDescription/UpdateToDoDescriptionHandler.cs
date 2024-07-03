@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using ToDoList.Domain.Shared.DTOs;
 using ToDoList.Domain.ToDoList.Entities;
 using ToDoList.Domain.ToDoList.UseCases.Contracts;
 
 namespace ToDoList.Domain.ToDoList.UseCases.UpdateToDoDescription;
-public class UpdateToDoDescriptionHandler(IToDoRepository repository, MemoryCache cache) {
-    public async Task<Result<UpdateToDoDescriptionResponse>> Handle(UpdateToDoDescriptionRequest request) {
+public class UpdateToDoDescriptionHandler(IToDoRepository repository, MemoryCache cache) : IRequestHandler<UpdateToDoDescriptionRequest, Result<UpdateToDoDescriptionResponse>> {
+    public async Task<Result<UpdateToDoDescriptionResponse>> Handle(UpdateToDoDescriptionRequest request, CancellationToken cancellationToken) {
 
         #region Validate Request
         if (request is null) return new Result<UpdateToDoDescriptionResponse>(error: "Request can not be null", status: HttpStatusCode.BadRequest);

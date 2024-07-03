@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using ToDoList.Domain.Shared.DTOs;
 using ToDoList.Domain.ToDoList.Entities;
 using ToDoList.Domain.ToDoList.UseCases.Contracts;
 
 namespace ToDoList.Domain.ToDoList.UseCases.CreateToDo;
-public class CreateToDoHandler(IToDoRepository repository, MemoryCache cache) {
-    public async Task<Result<CreateToDoResponse>> Handle(CreateToDoRequest request) {
+public class CreateToDoHandler(IToDoRepository repository, MemoryCache cache) : IRequestHandler<CreateToDoRequest, Result<CreateToDoResponse>> {
+    public async Task<Result<CreateToDoResponse>> Handle(CreateToDoRequest request, CancellationToken cancellationToken) {
 
         #region Validate Request    
         var validator = new CreateToDoValidation();

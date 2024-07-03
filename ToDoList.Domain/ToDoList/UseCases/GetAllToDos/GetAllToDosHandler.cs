@@ -1,12 +1,13 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using ToDoList.Domain.Shared.DTOs;
 using ToDoList.Domain.ToDoList.Entities;
 using ToDoList.Domain.ToDoList.UseCases.Contracts;
 
 namespace ToDoList.Domain.ToDoList.UseCases.GetAllToDos;
-public class GetAllToDosHandler(IToDoRepository repository, MemoryCache cache) {
-    public async Task<Result<GetAllToDosResponse>> Handle(GetAllToDosRequest request) {
+public class GetAllToDosHandler(IToDoRepository repository, MemoryCache cache) : IRequestHandler<GetAllToDosRequest, Result<GetAllToDosResponse>> {
+    public async Task<Result<GetAllToDosResponse>> Handle(GetAllToDosRequest request, CancellationToken cancellationToken) {
 
         if (request is null) return new Result<GetAllToDosResponse>(error: "Request can not be null", status: HttpStatusCode.BadRequest);
 
