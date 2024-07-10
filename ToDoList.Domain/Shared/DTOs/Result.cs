@@ -6,6 +6,8 @@ public class Result<T> {
     public HttpStatusCode Status { get; private set; }
     public List<string> Errors { get; private set; } = [];
     public string? ExceptionMessage { get; private set; }
+    public bool HasErrors => Errors.Count != 0;
+    public bool Success => !HasErrors;
 
     public Result(T data, List<string> errors, HttpStatusCode status) {
         Data = data;

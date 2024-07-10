@@ -29,7 +29,7 @@ public class CreateToDoHandler(IToDoRepository repository, MemoryCache cache) : 
 
         #region Save Data and Reset Cache
         try {
-            await repository.SaveToDoAsync(toDo);
+            await repository.SaveToDoAsync(toDo, cancellationToken);
             cache.Clear();
 
         } catch (Exception ex) {
