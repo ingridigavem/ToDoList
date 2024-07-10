@@ -20,12 +20,12 @@ public class GetAllToDosHandler(IToDoRepository repository, MemoryCache cache) :
 
         try {
             if (!cache.TryGetValue(cacheTotalCountKey, out totalCount)) {
-                totalCount = await repository.CountAsync();
+                totalCount = await repository.CountAsync(cancellationToken);
                 cache.Set(cacheTotalCountKey, totalCount);
             }
 
             if (!cache.TryGetValue(cacheToDosKey, out toDos)) {
-                toDos = await repository.GetAllAsync(request.PageNumber, request.PageSize);
+                toDos = await repository.GetAllAsync(request.PageNumber, request.PageSize, cancellationToken);
                 cache.Set(cacheToDosKey, toDos);
             }
         } catch (Exception ex) {
