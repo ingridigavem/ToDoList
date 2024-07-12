@@ -6,6 +6,6 @@ public interface IToDoRepository {
     Task DeleteToDoAsync(Guid id, CancellationToken cancellationToken = default);
     Task<List<ToDo>> GetAllAsync(int PageNumber = 1, int PageSize = 10, CancellationToken cancellationToken = default);
     Task<int> CountAsync(CancellationToken cancellationToken = default);
-    Task<ToDo> CompleteToDoAsync(Guid id, bool complete, CancellationToken cancellationToken = default);
-    Task<ToDo> UpdateToDoDescriptionAsync(Guid id, string description, CancellationToken cancellationToken = default);
+    Task CompleteToDoAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<ToDo?> UpdateToDoDescriptionAsync(Guid id, string description, CancellationToken cancellationToken = default);
 }

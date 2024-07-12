@@ -21,12 +21,12 @@ public class GetAllToDosHandler(IToDoRepository repository, MemoryCache cache) :
         try {
             if (!cache.TryGetValue(cacheTotalCountKey, out totalCount)) {
                 totalCount = await repository.CountAsync(cancellationToken);
-                cache.Set(cacheTotalCountKey, totalCount);
+                cache.Set(cacheTotalCountKey, totalCount, TimeSpan.FromMinutes(120));
             }
 
             if (!cache.TryGetValue(cacheToDosKey, out toDos)) {
                 toDos = await repository.GetAllAsync(request.PageNumber, request.PageSize, cancellationToken);
-                cache.Set(cacheToDosKey, toDos);
+                cache.Set(cacheToDosKey, toDos, TimeSpan.FromMinutes(120));
             }
         } catch (Exception ex) {
             return new Result<GetAllToDosResponse>(error: "Failed to Get ToDos and Total of ToDos", exceptionMessage: ex.Message, status: HttpStatusCode.InternalServerError);

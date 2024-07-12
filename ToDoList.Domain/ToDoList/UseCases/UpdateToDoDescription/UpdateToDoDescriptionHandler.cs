@@ -22,11 +22,15 @@ public class UpdateToDoDescriptionHandler(IToDoRepository repository, MemoryCach
         }
         #endregion        
 
-        ToDo toDo;
+        ToDo? toDo;
         #region Complete ToDo and Reset Cache
         try {
 
-            toDo = await repository.UpdateToDoDescriptionAsync(request.Id, request.Description);
+            toDo = await repository.UpdateToDoDescriptionAsync(request.Id, request.Description, cancellationToken);
+
+            if (toDo is null)
+                return new Result<UpdateToDoDescriptionResponse>(error: "To-Do not found", status: HttpStatusCode.NotFound);
+
             cache.Clear();
         } catch (Exception ex) {
             return new Result<UpdateToDoDescriptionResponse>(error: "Failed to complete To-Do", exceptionMessage: ex.Message, status: HttpStatusCode.InternalServerError);

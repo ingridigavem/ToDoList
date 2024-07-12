@@ -38,6 +38,5 @@ public class CompleteToDoValidation : AbstractValidator<CompleteToDoRequest> {
     public CompleteToDoValidation() {
         RuleFor(request => request).NotNull();
         RuleFor(request => request).Equals(typeof(CompleteToDoRequest));
-        RuleFor(request => request.Complete).NotNull();
     }
 }

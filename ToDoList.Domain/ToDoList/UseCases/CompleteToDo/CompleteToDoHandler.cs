@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using ToDoList.Domain.Shared.DTOs;
-using ToDoList.Domain.ToDoList.Entities;
 using ToDoList.Domain.ToDoList.UseCases.Contracts;
 
 namespace ToDoList.Domain.ToDoList.UseCases.UpdateToDo;
@@ -21,17 +20,16 @@ public class CompleteToDoHandler(IToDoRepository repository, MemoryCache cache) 
         }
         #endregion
 
-        ToDo toDo;
         #region Complete ToDo and Reset Cache
         try {
 
-            toDo = await repository.CompleteToDoAsync(request.Id, request.Complete);
+            await repository.CompleteToDoAsync(request.Id, cancellationToken);
             cache.Clear();
         } catch (Exception ex) {
             return new Result<CompleteToDoResponse>(error: "Failed to complete To-Do", exceptionMessage: ex.Message, status: HttpStatusCode.InternalServerError);
         }
         #endregion
 
-        return new Result<CompleteToDoResponse>(new CompleteToDoResponse(toDo), HttpStatusCode.OK);
+        return new Result<CompleteToDoResponse>(new CompleteToDoResponse(true), HttpStatusCode.OK);
     }
 }

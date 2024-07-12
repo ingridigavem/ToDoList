@@ -1,0 +1,35 @@
+﻿@ToDoList.Api_HostAddress = https://localhost:7091
+
+# Create ToDo
+POST {{ToDoList.Api_HostAddress}}/api/v1/toDo
+Content-Type: application/json
+
+{
+    "description": "description example"
+}
+
+###
+# Get ToDos with pagination
+GET {{ToDoList.Api_HostAddress}}/api/v1/toDos?page_number=1&page_size=10
+
+###
+# Get ToDos without pagination
+GET {{ToDoList.Api_HostAddress}}/api/v1/toDos
+
+###
+# Delete ToDo
+DELETE {{ToDoList.Api_HostAddress}}/api/v1/toDo/{Id}
+
+###
+# Complete ToDo
+PATCH {{ToDoList.Api_HostAddress}}/api/v1/toDo/complete/{Id}
+
+###
+
+PATCH {{ToDoList.Api_HostAddress}}/api/v1/toDo/{Id}
+Content-Type: application/json
+
+{
+    "description": "description example patch"
+}
+###
