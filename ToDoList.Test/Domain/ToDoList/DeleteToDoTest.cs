@@ -12,13 +12,13 @@ public class DeleteToDoTest {
 
     [Fact]
     public async Task ShouldDeleteToDo() {
-        repository.Setup(x => x.DeleteToDoAsync(It.IsAny<Guid>()));
+        repository.Setup(x => x.DeleteToDoAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()));
         cache.Set(Consts.CACHE_KEY, "test value");
 
         var handler = new DeleteToDoHandler(repository.Object, cache);
 
         var request = new DeleteToDoRequest(Guid.NewGuid());
-        var result = await handler.Handle(request);
+        var result = await handler.Handle(request, new CancellationToken());
 
         Assert.Equal(HttpStatusCode.NoContent, result.Status);
         Assert.IsType<DeleteToDoResponse>(result.Data);
@@ -29,11 +29,11 @@ public class DeleteToDoTest {
 
     [Fact]
     public async Task ShouldReturnErrorWithInvalidRequest() {
-        repository.Setup(x => x.DeleteToDoAsync(It.IsAny<Guid>()));
+        repository.Setup(x => x.DeleteToDoAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()));
 
         var handler = new DeleteToDoHandler(repository.Object, cache);
 
-        var result = await handler.Handle(null);
+        var result = await handler.Handle(null, new CancellationToken());
 
         Assert.Equal(HttpStatusCode.BadRequest, result.Status);
         Assert.NotEmpty(result.Errors);
@@ -43,12 +43,12 @@ public class DeleteToDoTest {
 
     [Fact]
     public async Task ShouldReturnErrorsListMessageGreatherThanZeroAndExeceptionMessageNotNullWhenRepositoryFails() {
-        repository.Setup(x => x.DeleteToDoAsync(It.IsAny<Guid>())).Throws(new Exception());
+        repository.Setup(x => x.DeleteToDoAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).Throws(new Exception());
 
         var handler = new DeleteToDoHandler(repository.Object, cache);
 
         var request = new DeleteToDoRequest(Guid.NewGuid());
-        var result = await handler.Handle(request);
+        var result = await handler.Handle(request, new CancellationToken());
 
         Assert.Equal(HttpStatusCode.InternalServerError, result.Status);
         Assert.NotEmpty(result.Errors);
