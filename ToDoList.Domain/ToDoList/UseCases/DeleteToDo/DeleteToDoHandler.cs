@@ -23,7 +23,7 @@ public class DeleteToDoHandler(IToDoRepository repository, MemoryCache cache) : 
 
         #region Delete ToDo and Reset Cache
         try {
-            await repository.DeleteToDoAsync(request.Id);
+            await repository.DeleteToDoAsync(request.Id, cancellationToken);
             cache.Clear();
         } catch (Exception ex) {
 
