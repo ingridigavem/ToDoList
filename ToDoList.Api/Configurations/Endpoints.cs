@@ -20,6 +20,13 @@ public static class Endpoints {
                 var result = await handler.Handle(request, new CancellationToken());
                 return Results.Json(result, statusCode: (int)result.Status);
             })
+            .WithOpenApi(operation => new(operation) {
+                Summary = "Get a list of ToDos",
+                Description = "Return a list of ToDos. Can receive or not parameters for pagination",
+            })
+            .Produces<Result<GetAllToDosResponse>>(StatusCodes.Status200OK)
+            .Produces<Result<GetAllToDosResponse>>(StatusCodes.Status400BadRequest)
+            .Produces<Result<GetAllToDosResponse>>(StatusCodes.Status500InternalServerError)
         );
         #endregion
 
@@ -30,6 +37,13 @@ public static class Endpoints {
                 var result = await handler.Handle(request, new CancellationToken());
                 return Results.Json(result, statusCode: (int)result.Status);
             })
+            .WithOpenApi(operation => new(operation) {
+                Summary = "Create a ToDo",
+                Description = "Receives a body with a description to create a new ToDo",
+            })
+            .Produces<Result<CreateToDoResponse>>(StatusCodes.Status201Created)
+            .Produces<Result<CreateToDoResponse>>(StatusCodes.Status400BadRequest)
+            .Produces<Result<CreateToDoResponse>>(StatusCodes.Status500InternalServerError)
         );
         #endregion
 
@@ -39,6 +53,13 @@ public static class Endpoints {
                 var result = await handler.Handle(request, new CancellationToken());
                 return Results.Json(result, statusCode: (int)result.Status);
             })
+            .WithOpenApi(operation => new(operation) {
+                Summary = "Delete ToDo",
+                Description = "Receives a ToDo ID and delete the ToDo informed",
+            })
+            .Produces<Result<DeleteToDoResponse>>(StatusCodes.Status204NoContent)
+            .Produces<Result<DeleteToDoResponse>>(StatusCodes.Status400BadRequest)
+            .Produces<Result<DeleteToDoResponse>>(StatusCodes.Status500InternalServerError)
         );
         #endregion
 
@@ -48,6 +69,13 @@ public static class Endpoints {
                 var result = await handler.Handle(request, new CancellationToken());
                 return Results.Json(result, statusCode: (int)result.Status);
             })
+            .WithOpenApi(operation => new(operation) {
+                Summary = "Complete or Uncomplete ToDo",
+                Description = "Receives a ToDo ID and Complete or Uncomplete the ToDo informed",
+            })
+            .Produces<Result<CompleteToDoResponse>>(StatusCodes.Status200OK)
+            .Produces<Result<CompleteToDoResponse>>(StatusCodes.Status400BadRequest)
+            .Produces<Result<CompleteToDoResponse>>(StatusCodes.Status500InternalServerError)
         );
         #endregion
 
@@ -59,6 +87,14 @@ public static class Endpoints {
                 var result = await handler.Handle(request, new CancellationToken());
                 return Results.Json(result, statusCode: (int)result.Status);
             })
+            .WithOpenApi(operation => new(operation) {
+                Summary = "Update ToDo description",
+                Description = "Receives a ToDo ID and a body with a new description",
+            })
+            .Produces<Result<UpdateToDoDescriptionResponse>>(StatusCodes.Status200OK)
+            .Produces<Result<UpdateToDoDescriptionResponse>>(StatusCodes.Status400BadRequest)
+            .Produces<Result<UpdateToDoDescriptionResponse>>(StatusCodes.Status404NotFound)
+            .Produces<Result<UpdateToDoDescriptionResponse>>(StatusCodes.Status500InternalServerError)
         );
         #endregion
 
