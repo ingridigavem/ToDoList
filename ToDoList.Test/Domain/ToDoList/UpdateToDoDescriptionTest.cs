@@ -19,13 +19,13 @@ public class CompleteToDoTest {
 
         toDoExpected.CompleteToDo();
 
-        repository.Setup(x => x.UpdateToDoDescriptionAsync(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync(toDoExpected);
+        repository.Setup(x => x.UpdateToDoDescriptionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(toDoExpected);
         cache.Set(Consts.CACHE_KEY, "test value");
 
         var handler = new UpdateToDoDescriptionHandler(repository.Object, cache);
 
         var request = new UpdateToDoDescriptionRequest(toDoExpected.Id, Consts.DESCRIPTION_FOR_TEST);
-        var result = await handler.Handle(request);
+        var result = await handler.Handle(request, new CancellationToken());
 
         Assert.Equal(toDoExpected, result.Data.ToDo);
         Assert.Equal(toDoExpected.Description, result.Data.ToDo.Description);
@@ -42,12 +42,12 @@ public class CompleteToDoTest {
 
         var toDoExpected = new ToDo { Description = Consts.DESCRIPTION_FOR_TEST };
 
-        repository.Setup(x => x.UpdateToDoDescriptionAsync(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync(toDoExpected);
+        repository.Setup(x => x.UpdateToDoDescriptionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(toDoExpected);
 
         var handler = new UpdateToDoDescriptionHandler(repository.Object, cache);
 
         var request = new UpdateToDoDescriptionRequest(toDoExpected.Id, invalidDescriptionLength);
-        var result = await handler.Handle(request);
+        var result = await handler.Handle(request, new CancellationToken());
 
         Assert.Equal(HttpStatusCode.BadRequest, result.Status);
         Assert.NotEmpty(result.Errors);
@@ -63,12 +63,12 @@ public class CompleteToDoTest {
     public async Task ShouldNotCreateNewToDoWhenDescriptionLengthLowerThanMinimumOrEmptyOrNull(string description) {
         var toDoExpected = new ToDo { Description = Consts.DESCRIPTION_FOR_TEST };
 
-        repository.Setup(x => x.UpdateToDoDescriptionAsync(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync(toDoExpected);
+        repository.Setup(x => x.UpdateToDoDescriptionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(toDoExpected);
 
         var handler = new UpdateToDoDescriptionHandler(repository.Object, cache);
 
         var request = new UpdateToDoDescriptionRequest(toDoExpected.Id, description);
-        var result = await handler.Handle(request);
+        var result = await handler.Handle(request, new CancellationToken());
 
         Assert.Equal(HttpStatusCode.BadRequest, result.Status);
         Assert.NotEmpty(result.Errors);
@@ -78,12 +78,12 @@ public class CompleteToDoTest {
 
     [Fact]
     public async Task ShouldReturnResultWithErrorsListMessageGreaterThanZeroAndExceptionMessageNotNullWhenRepositoryFails() {
-        repository.Setup(x => x.UpdateToDoDescriptionAsync(It.IsAny<Guid>(), It.IsAny<string>())).Throws(new Exception()); ;
+        repository.Setup(x => x.UpdateToDoDescriptionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws(new Exception()); ;
 
         var handler = new UpdateToDoDescriptionHandler(repository.Object, cache);
 
         var request = new UpdateToDoDescriptionRequest(new Guid(), Consts.DESCRIPTION_FOR_TEST);
-        var result = await handler.Handle(request);
+        var result = await handler.Handle(request, new CancellationToken());
 
         Assert.Equal(HttpStatusCode.InternalServerError, result.Status);
         Assert.NotEmpty(result.Errors);
@@ -93,11 +93,11 @@ public class CompleteToDoTest {
 
     [Fact]
     public async Task ShouldReturnErrorWithInvalidRequest() {
-        repository.Setup(x => x.UpdateToDoDescriptionAsync(It.IsAny<Guid>(), It.IsAny<string>()));
+        repository.Setup(x => x.UpdateToDoDescriptionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>()));
 
         var handler = new UpdateToDoDescriptionHandler(repository.Object, cache);
 
-        var result = await handler.Handle(null);
+        var result = await handler.Handle(null, new CancellationToken());
 
         Assert.Equal(HttpStatusCode.BadRequest, result.Status);
         Assert.NotEmpty(result.Errors);

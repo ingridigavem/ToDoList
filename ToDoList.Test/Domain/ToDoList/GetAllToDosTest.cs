@@ -13,17 +13,17 @@ public class GetAllToDosTest {
 
     [Fact]
     public async Task ShouldReturnListOfToDosWithDefaultPagination() {
-        var numberOfToDosWithDefaultPagination = 20;
+        var numberOfToDosWithDefaultPagination = 10;
         var totalCacheExpected = 2;
         var toDosListExpected = GetToDosMock(numberOfToDosWithDefaultPagination);
 
-        repository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(toDosListExpected);
-        repository.Setup(x => x.CountAsync()).ReturnsAsync(toDosListExpected.Count);
+        repository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(toDosListExpected);
+        repository.Setup(x => x.CountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(toDosListExpected.Count);
 
         var handler = new GetAllToDosHandler(repository.Object, cache);
 
         var request = new GetAllToDosRequest();
-        var result = await handler.Handle(request);
+        var result = await handler.Handle(request, new CancellationToken());
 
         Assert.Equal(toDosListExpected, result.Data.ToDos);
         Assert.Equal(toDosListExpected.Count, result.Data.TotalCount);
@@ -35,15 +35,15 @@ public class GetAllToDosTest {
     }
 
     [Theory]
-    [InlineData(0, 10)]
-    [InlineData(1, 100)]
+    [InlineData(1, 10)]
+    [InlineData(2, 100)]
     [InlineData(3, 20)]
     public async Task ShouldReturnListOfToDosUsingCache(int pageNumber, int pageSize) {
         var totalCacheExpected = 2;
         var toDosListExpected = GetToDosMock(pageSize);
 
-        repository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()));
-        repository.Setup(x => x.CountAsync());
+        repository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()));
+        repository.Setup(x => x.CountAsync(It.IsAny<CancellationToken>()));
 
         cache.Set($"toDosList_page_{pageNumber}_size_{pageSize}", toDosListExpected);
         cache.Set("totalCount", pageSize);
@@ -51,7 +51,7 @@ public class GetAllToDosTest {
         var handler = new GetAllToDosHandler(repository.Object, cache);
 
         var request = new GetAllToDosRequest(pageNumber, pageSize);
-        var result = await handler.Handle(request);
+        var result = await handler.Handle(request, new CancellationToken());
 
         Assert.Equal(toDosListExpected, result.Data.ToDos);
         Assert.Equal(toDosListExpected.Count, result.Data.TotalCount);
@@ -68,13 +68,13 @@ public class GetAllToDosTest {
         var totalCacheExpected = 2;
         var totalCountExpected = 0;
 
-        repository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(emptyToDoList);
-        repository.Setup(x => x.CountAsync()).ReturnsAsync(totalCountExpected);
+        repository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(emptyToDoList);
+        repository.Setup(x => x.CountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(totalCountExpected);
 
         var handler = new GetAllToDosHandler(repository.Object, cache);
 
         var request = new GetAllToDosRequest();
-        var result = await handler.Handle(request);
+        var result = await handler.Handle(request, new CancellationToken());
 
         Assert.Empty(result.Data.ToDos);
         Assert.Equal(totalCountExpected, result.Data.TotalCount);
@@ -87,11 +87,11 @@ public class GetAllToDosTest {
 
     [Fact]
     public async Task ShouldReturnErrorWithInvalidRequest() {
-        repository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()));
+        repository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()));
 
         var handler = new GetAllToDosHandler(repository.Object, cache);
 
-        var result = await handler.Handle(null);
+        var result = await handler.Handle(null, new CancellationToken());
 
         Assert.Equal(HttpStatusCode.BadRequest, result.Status);
         Assert.NotEmpty(result.Errors);
@@ -101,12 +101,12 @@ public class GetAllToDosTest {
 
     [Fact]
     public async Task ShouldReturnErrorsListMessageGreatherThanZeroAndExeceptionMessageNotNullWhenRepositoryFails() {
-        repository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).Throws(new Exception());
+        repository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).Throws(new Exception());
 
         var handler = new GetAllToDosHandler(repository.Object, cache);
 
         var request = new GetAllToDosRequest();
-        var result = await handler.Handle(request);
+        var result = await handler.Handle(request, new CancellationToken());
 
         Assert.Equal(HttpStatusCode.InternalServerError, result.Status);
         Assert.NotEmpty(result.Errors);
