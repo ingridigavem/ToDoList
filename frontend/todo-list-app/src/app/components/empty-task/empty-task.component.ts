@@ -12,7 +12,7 @@ import { ListPlus, LucideAngularModule } from 'lucide-angular';
 })
 export class EmptyTaskComponent {
 
-  protected readonly ClipboardList = ListPlus;
+  protected readonly ListPlus = ListPlus;
 }
 
 
