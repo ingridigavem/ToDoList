@@ -12,7 +12,10 @@
   <div class="rounded-t-lg border-t border-gray-400">
     @if (tasks) {
       @for (task of activeTasks; track task.id) {
-        <app-task-card [task]="task" (delete)="handleTaskDelete(task.id)" />
+        <app-task-card
+          [task]="task" (delete)="handleTaskDelete(task.id)" (check)="handleTaskChecked(task.id)"
+          [@fadeOut]="task.deleted ? 'void' : '*'" [@fadeIn]
+        />
       }
     } @else {
       <app-empty-task />

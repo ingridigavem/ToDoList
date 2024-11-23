@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CirclePlus, LucideAngularModule } from 'lucide-angular';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ToDoService } from '../../services/to-do.service';
 
 @Component({
   selector: 'app-new-task',
@@ -12,15 +13,17 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 export class NewTaskComponent {
   readonly CirclePlus = CirclePlus;
   newTaskForm: FormGroup;
+  toDoService = inject(ToDoService);
 
   constructor(private formBuilder: FormBuilder) {
     this.newTaskForm = this.formBuilder.group({
-      newTask: ['', Validators.required],
+      description: ['', Validators.required],
     });
   }
 
   handleSubmitNewTask() {
-    console.log('submit');
+    if (this.newTaskForm.valid) this.toDoService.insertTask(this.newTaskForm.value.description);
+    this.newTaskForm.reset();
   }
 }
 

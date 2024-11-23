@@ -15,16 +15,15 @@ export class TaskCardComponent {
   }) task!: Task;
 
   @Output() delete = new EventEmitter<number>();
-
+  @Output() check = new EventEmitter<number>();
+  
   protected readonly TrashIcon = Trash2;
 
-  handleTaskCheck(event: Event) {
-    console.log(event);
-    this.task.checked = !this.task.checked;
+  handleTaskCheck() {
+    this.check.emit(this.task.id);
   }
 
   onDelete() {
-    console.log(this.task.id);
     this.delete.emit(this.task.id);
   }
 }
