@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { LucideAngularModule, Trash2 } from 'lucide-angular';
 import { Task } from '../../interfaces/interfaces';
 
@@ -14,14 +14,17 @@ export class TaskCardComponent {
     required: true,
   }) task!: Task;
 
+  @Output() delete = new EventEmitter<number>();
+
   protected readonly TrashIcon = Trash2;
 
-  checkTask(event: Event) {
+  handleTaskCheck(event: Event) {
     console.log(event);
     this.task.checked = !this.task.checked;
   }
 
-  deleteTask(taskId: number) {
-    console.log(taskId);
+  onDelete() {
+    console.log(this.task.id);
+    this.delete.emit(this.task.id);
   }
 }

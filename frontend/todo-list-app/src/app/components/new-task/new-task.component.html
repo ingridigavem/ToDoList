@@ -1,16 +1,20 @@
-<section class="flex">
-  <input
-    type="text"
-    placeholder="Adicione uma nova tarefa"
-    class="bg-gray-500 text-base p-4 rounded-lg shadow-gray-700 shadow-sm mr-2 text-left w-full placeholder-gray-300
-   focus:shadow-purple-dark focus:shadow-sm focus:outline-none focus:ring-0 focus:border-danger"
-  />
-  <button
-    type="submit"
-    class="text-gray-100 text-sm font-bold px-4 bg-blue-dark rounded-lg flex items-center"
-  >
-    <span class="pr-2">Criar</span>
-    <lucide-icon [img]="CirclePlus" class="size-4"></lucide-icon>
-  </button>
+<section>
+  <form class="flex" [formGroup]="newTaskForm" (ngSubmit)="handleSubmitNewTask()">
+    <input
+      type="text"
+      placeholder="Adicione uma nova tarefa"
+      class="bg-gray-500 text-base p-4 rounded-lg shadow-gray-700 shadow-sm mr-2 text-left w-full placeholder-gray-300 text-gray-200
+   focus:shadow-purple-dark focus:shadow-sm focus:outline-none focus:ring-0 focus:border-danger focus:text-gray-200"
+      formControlName="newTask"
+    />
+    <button
+      type="submit"
+      [disabled]="newTaskForm.invalid"
+      class="text-gray-100 text-sm font-bold px-4 bg-blue-dark rounded-lg flex items-center disabled:opacity-50"
+    >
+      <span class="pr-2">Criar</span>
+      <lucide-icon [img]="CirclePlus" class="size-4"></lucide-icon>
+    </button>
+  </form>
 </section>
 

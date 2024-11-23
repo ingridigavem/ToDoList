@@ -3,7 +3,7 @@
     <input
       type="checkbox"
       [checked]="task.checked"
-      (change)="checkTask($event)"
+      (change)="handleTaskCheck($event)"
       class="peer appearance-none size-4 border-blue border-2 rounded-full default:ring-0.5 ring-blue checked:bg-purple-dark checked:ring-purple-dark checked:border-0 checked:border-purple-dark shrink-0 cursor-pointer"
     />
     <span class="absolute text-gray-100 opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -24,6 +24,6 @@
     </span>
   </label>
   <span class="pl-4 pr-10 text-sm text-gray-100" [class.line-through]="task.checked">{{ task.description }} </span>
-  <lucide-icon [img]="TrashIcon" class="w-4.5 h-5 text-gray-300" (click)="deleteTask(task.id)"></lucide-icon>
+  <lucide-icon [img]="TrashIcon" class="w-4.5 h-5 text-gray-300" (click)="onDelete()"></lucide-icon>
 </section>
 

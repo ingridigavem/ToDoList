@@ -11,8 +11,8 @@
   </div>
   <div class="rounded-t-lg border-t border-gray-400">
     @if (tasks) {
-      @for (task of tasksNotDeleted; track task.id) {
-        <app-task-card [task]="task" />
+      @for (task of activeTasks; track task.id) {
+        <app-task-card [task]="task" (delete)="handleTaskDelete(task.id)" />
       }
     } @else {
       <app-empty-task />
