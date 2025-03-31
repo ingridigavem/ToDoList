@@ -1,57 +1,61 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Task } from '../interfaces/interfaces';
+import { Subject, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
+import {
+  ApiResponse,
+  CompleteToDoResponse,
+  GetAllToDosResponse,
+} from '../types/types';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ToDoService {
-  private tasks: Task[] = [
-    {
-      id: 1,
-      description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias asperiores nam necessitatibus obcaecati rem temporibus.',
-      checked: false,
-      deleted: false
-    },
-    {
-      id: 2,
-      description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias asperiores nam necessitatibus obcaecati rem temporibus.',
-      checked: true,
-      deleted: false
-    },
-    {
-      id: 3,
-      description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias asperiores nam necessitatibus obcaecati rem temporibus.',
-      checked: false,
-      deleted: false
-    }
-  ];
+  private serverUrl = environment.toDoApiV1Url;
 
-  constructor() {
-  }
+  private tasksSubject = new Subject<any>();
+
+  constructor(private http: HttpClient) {}
 
   getTasks() {
-    return this.tasks;
+    return this.http.get<ApiResponse<GetAllToDosResponse>>(
+      `${this.serverUrl}/toDos`,
+      { observe: 'response' }
+    );
   }
 
   insertTask(description: string) {
-    const lastId = this.tasks.length > 0 ? Math.max(...this.tasks.map(task => task.id)) : 0;
-
-    const task: Task = {
-      id: lastId + 1,
-      description: description,
-      checked: false,
-      deleted: false
-    };
-
-    this.tasks.push(task);
+    return this.http
+      .post<ApiResponse<null>>(
+        `${this.serverUrl}/toDo`,
+        { description },
+        {
+          observe: 'response',
+        }
+      )
+      .pipe(
+        tap(() => {
+          this.tasksSubject.next(null);
+        })
+      );
   }
 
-  deleteTask(id: number) {
-    this.tasks.find(task => task.id === id)!.deleted = true;
+  getTasksObservable() {
+    return this.tasksSubject.asObservable();
   }
 
-  checkTask(id: number) {
-    const task = this.tasks.find(task => task.id === id)!;
-    task.checked = !task.checked;
+  deleteTask(id: string) {
+    return this.http.delete<ApiResponse<null>>(`${this.serverUrl}/toDo/${id}`, {
+      observe: 'response',
+    });
+  }
+
+  checkTask(id: string) {
+    return this.http.patch<ApiResponse<CompleteToDoResponse>>(
+      `${this.serverUrl}/toDo/complete/${id}`,
+      {},
+      { observe: 'response' }
+    );
   }
 }

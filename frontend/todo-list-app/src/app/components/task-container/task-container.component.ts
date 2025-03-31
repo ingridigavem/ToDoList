@@ -1,9 +1,10 @@
+import { animate, style, transition, trigger } from '@angular/animations';
+import { HttpStatusCode } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
-import { TaskCardComponent } from '../task-card/task-card.component';
-import { EmptyTaskComponent } from '../empty-task/empty-task.component';
 import { Task } from '../../interfaces/interfaces';
 import { ToDoService } from '../../services/to-do.service';
-import { animate, style, transition, trigger } from '@angular/animations';
+import { EmptyTaskComponent } from '../empty-task/empty-task.component';
+import { TaskCardComponent } from '../task-card/task-card.component';
 
 @Component({
   selector: 'app-task-container',
@@ -44,22 +45,50 @@ export class TaskContainerComponent implements OnInit {
   toDoService = inject(ToDoService);
   tasks: Task[] = [];
 
-
   get activeTasks(): Task[] {
-    return this.tasks.filter(t => !t.deleted);
+    return this.tasks.filter((t) => !t.deleted);
   }
 
-  ngOnInit() {
-    this.tasks = this.toDoService.getTasks();
+  ngOnInit(): void {
+    this.loadTasks();
+    this.toDoService.getTasksObservable().subscribe(() => {
+      this.loadTasks();
+    });
   }
 
-  handleTaskDelete(taskId: number): void {
+  handleTaskDelete(taskId: string): void {
     setTimeout(() => {
-      this.toDoService.deleteTask(taskId);
+      this.toDoService.deleteTask(taskId).subscribe((response) => {
+        const statusCode = response.status;
+
+        if (statusCode !== HttpStatusCode.NoContent) return;
+
+        this.loadTasks();
+      });
     }, 300);
   }
 
-  handleTaskChecked(taskId: number): void {
-    this.toDoService.checkTask(taskId);
+  handleTaskChecked(taskId: string): void {
+    this.toDoService.checkTask(taskId).subscribe((response) => {
+      const statusCode = response.status;
+      const responseBody = response.body;
+
+      if (statusCode !== HttpStatusCode.Ok) return;
+
+      if (responseBody?.data?.success) {
+        this.loadTasks();
+      }
+    });
+  }
+
+  loadTasks() {
+    this.toDoService.getTasks().subscribe((response) => {
+      const statusCode = response.status;
+      const responseBody = response.body;
+
+      if (statusCode !== HttpStatusCode.Ok) return;
+
+      this.tasks = responseBody?.data?.toDos || [];
+    });
   }
 }

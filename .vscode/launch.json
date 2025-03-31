@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Debug API + Angular",
+      "configurations": ["Debug .NET API", "Debug Angular"]
+    }
+  ],
+  "configurations": [
+    {
+      "name": "Debug .NET API",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-api",
+      "program": "${workspaceFolder}\\backend\\ToDoList.Api\\bin\\Debug\\net8.0\\ToDoList.Api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}\\backend\\ToDoList.Api",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sourceFileMap": {
+        "/Users": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "Debug Angular",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}\\frontend\\todo-list-app",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}\\src\\*"
+      },
+      "runtimeArgs": ["--disable-extensions", "--allow-insecure-localhost"]
+    }
+  ]
+}

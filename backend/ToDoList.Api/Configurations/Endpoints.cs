@@ -35,13 +35,16 @@ public static class Endpoints {
         endpoints.Add(
             app.MapPost("api/v1/toDo", async ([FromBody] CreateToDoRequest request, IRequestHandler<CreateToDoRequest, Result<CreateToDoResponse>> handler) => {
                 var result = await handler.Handle(request, new CancellationToken());
+
+                if(result.Data != null && result!.Data.Id != Guid.Empty && result.Status == System.Net.HttpStatusCode.Created) return Results.Created($"api/v1/toDo/{result.Data.Id}", result);
+
                 return Results.Json(result, statusCode: (int)result.Status);
             })
             .WithOpenApi(operation => new(operation) {
                 Summary = "Create a ToDo",
                 Description = "Receives a body with a description to create a new ToDo",
             })
-            .Produces<Result<CreateToDoResponse>>(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status201Created)
             .Produces<Result<CreateToDoResponse>>(StatusCodes.Status400BadRequest)
             .Produces<Result<CreateToDoResponse>>(StatusCodes.Status500InternalServerError)
         );
@@ -51,13 +54,16 @@ public static class Endpoints {
         endpoints.Add(
             app.MapDelete("api/v1/toDo/{Id}", async ([AsParameters] DeleteToDoRequest request, IRequestHandler<DeleteToDoRequest, Result<DeleteToDoResponse>> handler) => {
                 var result = await handler.Handle(request, new CancellationToken());
+
+                if(result.Data != null && result!.Data.Success && result.Status == System.Net.HttpStatusCode.NoContent )  return Results.NoContent();
+
                 return Results.Json(result, statusCode: (int)result.Status);
             })
             .WithOpenApi(operation => new(operation) {
                 Summary = "Delete ToDo",
                 Description = "Receives a ToDo ID and delete the ToDo informed",
             })
-            .Produces<Result<DeleteToDoResponse>>(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status204NoContent)
             .Produces<Result<DeleteToDoResponse>>(StatusCodes.Status400BadRequest)
             .Produces<Result<DeleteToDoResponse>>(StatusCodes.Status500InternalServerError)
         );

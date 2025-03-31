@@ -1,6 +1,11 @@
 import { Component, inject } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { CirclePlus, LucideAngularModule } from 'lucide-angular';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToDoService } from '../../services/to-do.service';
 
 @Component({
@@ -8,7 +13,7 @@ import { ToDoService } from '../../services/to-do.service';
   standalone: true,
   imports: [LucideAngularModule, ReactiveFormsModule],
   templateUrl: './new-task.component.html',
-  styleUrl: './new-task.component.scss'
+  styleUrl: './new-task.component.scss',
 })
 export class NewTaskComponent {
   readonly CirclePlus = CirclePlus;
@@ -22,8 +27,15 @@ export class NewTaskComponent {
   }
 
   handleSubmitNewTask() {
-    if (this.newTaskForm.valid) this.toDoService.insertTask(this.newTaskForm.value.description);
+    if (this.newTaskForm.valid)
+      this.toDoService
+        .insertTask(this.newTaskForm.value.description)
+        .subscribe((response) => {
+          if (response.status !== 201) return;
+
+          const location = response.headers.get('Location');
+          console.log('Task criada! URL:', location);
+        });
     this.newTaskForm.reset();
   }
 }
-
