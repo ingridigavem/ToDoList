@@ -15,17 +15,17 @@ public class GetAllToDosHandler(IToDoRepository repository, MemoryCache cache) :
         IList<ToDo>? toDos;
         int totalCount;
 
-        string cacheToDosKey = $"toDosList_page_{request.PageNumber}_size_{request.PageSize}";
+        string cacheToDosKey = $"toDosList_page_{request.PageNumber}_size_{request.PageSize}_includeDeleted_{request.IncludeDeleted}";
         string cacheTotalCountKey = "totalCount";
 
         try {
             if (!cache.TryGetValue(cacheTotalCountKey, out totalCount)) {
-                totalCount = await repository.CountAsync(cancellationToken);
+                totalCount = await repository.CountAsync(request.IncludeDeleted, cancellationToken);
                 cache.Set(cacheTotalCountKey, totalCount, TimeSpan.FromMinutes(120));
             }
 
             if (!cache.TryGetValue(cacheToDosKey, out toDos)) {
-                toDos = await repository.GetAllAsync(request.PageNumber, request.PageSize, cancellationToken);
+                toDos = await repository.GetAllAsync(request.PageNumber, request.PageSize, request.IncludeDeleted, cancellationToken);
                 cache.Set(cacheToDosKey, toDos, TimeSpan.FromMinutes(120));
             }
         } catch (Exception ex) {

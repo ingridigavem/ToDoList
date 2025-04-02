@@ -5,12 +5,15 @@ using ToDoList.Infra.Data;
 
 namespace ToDoList.Infra.ToDoList.UseCases;
 public class ToDoRepository(AppDbContext context) : IToDoRepository {
-    public async Task<int> CountAsync(CancellationToken cancellationToken = default) =>
-        await context.ToDos.CountAsync(cancellationToken);
+    public async Task<int> CountAsync(bool includeDeleted = false, CancellationToken cancellationToken = default) =>
+        await context.ToDos.Where(t => includeDeleted || !t.Deleted).CountAsync(cancellationToken);
 
 
-    public async Task<List<ToDo>> GetAllAsync(int PageNumber = 1, int PageSize = 10, CancellationToken cancellationToken = default)
-        => await context.ToDos.AsNoTracking().ToListAsync(cancellationToken);
+    public async Task<List<ToDo>> GetAllAsync(int pageNumber = 1, int pageSize = 10, bool includeDeleted = false, CancellationToken cancellationToken = default)
+        => await context.ToDos.Where(t => includeDeleted || !t.Deleted).OrderByDescending(t => t.CreatedAt).AsNoTracking()
+        .Skip((pageNumber - 1) * pageSize)
+        .Take(pageSize)
+        .ToListAsync(cancellationToken);
 
     public async Task SaveToDoAsync(ToDo toDo, CancellationToken cancellationToken = default) {
         await context.ToDos.AddAsync(toDo, cancellationToken);

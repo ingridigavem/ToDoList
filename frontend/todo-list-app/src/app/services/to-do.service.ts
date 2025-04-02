@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -18,10 +18,17 @@ export class ToDoService {
 
   constructor(private http: HttpClient) {}
 
-  getTasks() {
+  getTasks(page: number, pageSize: number) {
+    const params = new HttpParams()
+      .set('PageNumber', page.toString())
+      .set('PageSize', pageSize.toString());
+
     return this.http.get<ApiResponse<GetAllToDosResponse>>(
       `${this.serverUrl}/toDos`,
-      { observe: 'response' }
+      {
+        observe: 'response',
+        params,
+      }
     );
   }
 

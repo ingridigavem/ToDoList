@@ -1,20 +1,30 @@
-<section>
+<section class="mb-10">
   <div class="flex justify-between pb-6">
     <div class="flex">
       <span class="text-blue text-sm font-bold pr-2">Tarefas criadas</span>
       <span
         class="text-gray-200 font-bold text-xs bg-gray-400 px-2 py-0.5 rounded-full min-w-7 block text-center"
-        >1</span
+        >{{ totalItems }}</span
       >
     </div>
     <div class="flex">
       <span class="text-purple text-sm font-bold pr-2">Concluídas</span>
       <span
         class="text-gray-200 font-bold text-xs bg-gray-400 px-2 py-0.5 rounded-full min-w-7 block text-center"
-        >0</span
+        >{{ completedTasks }}</span
       >
     </div>
   </div>
+
+  @if (isLoading) {
+  <div class="flex justify-center items-center">
+    <lucide-icon
+      [img]="Loader"
+      class="size-8 slow-spin text-blue"
+    ></lucide-icon>
+  </div>
+  } @if (!isLoading) {
+
   <div class="rounded-t-lg border-t border-gray-400">
     @if (tasks) { @for (task of activeTasks; track task.id) {
     <app-task-card
@@ -28,4 +38,41 @@
     <app-empty-task />
     }
   </div>
+
+  <div
+    class="pagination my-2 grid grid-rows-2 justify-end items-center justify-items-end"
+  >
+    <div class="flex space-x-2">
+      @for (page of totalPagesArray; track page){
+      <button
+        (click)="goToPage(page)"
+        [class.border-blue-dark]="page === currentPage"
+        [class.text-blue]="page === currentPage"
+        [class.text-gray-100]="page !== currentPage"
+        class="text-sm font-bold px-4 border-gray-300 hover:border-blue-dark hover:text-blue rounded-lg flex items-center disabled:opacity-50 duration-100 w-10 h-10 justify-center border-2 hover:cursor-pointer"
+      >
+        {{ page }}
+      </button>
+      }
+    </div>
+
+    <div class="grid grid-cols-2 mt-2 gap-2">
+      <button
+        (click)="prevPage()"
+        [disabled]="currentPage === 1"
+        class="px-3 py-1 text-gray-100 text-sm font-bold bg-blue-dark rounded-lg flex items-center duration-100 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <lucide-icon [img]="ArrowLeft" class="size-6"></lucide-icon>
+      </button>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages"
+        class="px-3 py-1 text-gray-100 text-sm font-bold bg-blue-dark rounded-lg flex items-center duration-100 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <lucide-icon [img]="ArrowRight" class="size-6"></lucide-icon>
+      </button>
+    </div>
+  </div>
+  }
 </section>
